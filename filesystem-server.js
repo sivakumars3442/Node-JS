@@ -16,7 +16,6 @@ var cors = require('cors');
 const pattern = /(\.\.\/)/g;
 
 var contentRootPath = yargs.argv.d;
-contentRootPath=contentRootPath.replace("../","");
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -164,7 +163,6 @@ function deleteFolder(req, res, contentRootPath) {
         if (fs.existsSync(path)) {
             fs.readdirSync(path).forEach(function (file, index) {
                 var curPath = path + "/" + file;
-                curPath=curPath.replace("../","");
                 if (fs.lstatSync(curPath).isDirectory()) { // recurse
                     deleteFolderRecursive(curPath);
                 } else { // delete file
@@ -430,7 +428,6 @@ function copyFolder(source, dest) {
     files = fs.readdirSync(source);
     files.forEach(function (file) {
         var curSource = path.join(source, file);
-        curSource=curSource.replace("../","");
         if (fs.lstatSync(curSource).isDirectory()) {
             copyFolder(curSource, path.join(dest, file)); source
         } else {
@@ -560,7 +557,6 @@ function MoveFolder(source, dest) {
     files = fs.readdirSync(source);
     files.forEach(function (file) {
         var curSource = path.join(source, file);
-        curSource=curSource.replace("../","");
         if (fs.lstatSync(curSource).isDirectory()) {
             MoveFolder(curSource, path.join(dest, file));
             fs.rmdirSync(curSource);
