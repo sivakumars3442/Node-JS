@@ -1230,9 +1230,19 @@ app.post('/', function (req, res) {
                     cwd.permission = getPermission(contentRootPath + req.body.path + cwd.name, cwd.name, cwd.isFile, contentRootPath, cwd.filterPath);
                     if (fs.lstatSync(file).isDirectory()) {
                         fs.readdirSync(file).forEach(function (items) {
-                            const normalizedItems = path.normalize(items).replace(/\\/g, '/');
-                            const normalizedFile = path.normalize(file).replace(/\\/g, '/');
-                            if (fs.statSync(path.join(normalizedFile, normalizedItems)).isDirectory()) {
+                            const sanitizedItems = path.normalize(items).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+                            const sanitizedFile = path.normalize(file).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+
+                            // console.log(sanitizedItems);
+                            // console.log(sanitizedFile);
+
+                            // const normalizedItems = path.normalize(items).replace(/\\/g, '/');
+                            // const normalizedFile = path.normalize(file).replace(/\\/g, '/');
+
+                            // console.log(normalizedItems);
+                            // console.log(normalizedFile);
+                            
+                            if (fs.statSync(path.join(sanitizedFile, sanitizedItems)).isDirectory()) {
                                 directoryList.push(items[i]);
                             }
                             if (directoryList.length > 0) {
