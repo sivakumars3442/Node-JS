@@ -1231,7 +1231,8 @@ app.post('/', function (req, res) {
                     if (fs.lstatSync(file).isDirectory()) {
                         fs.readdirSync(file).forEach(function (items) {
                             const normalizedItems = path.normalize(items).replace(/\\/g, '/');
-                            if (fs.statSync(path.join(path.normalize(file).replace(/\\/g, '/'), normalizedItems)).isDirectory()) {
+                            const normalizedFile = path.normalize(file).replace(/\\/g, '/');
+                            if (fs.statSync(path.join(normalizedFile, normalizedItems)).isDirectory()) {
                                 directoryList.push(items[i]);
                             }
                             if (directoryList.length > 0) {
