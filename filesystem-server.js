@@ -67,7 +67,8 @@ class AccessRules {
  */
 function GetFiles(req, res) {
     return new Promise((resolve, reject) => {
-        fs.readdir(contentRootPath + req.body.path.replace(pattern, ""), function (err, files) {
+        const sanitizedPath = path.normalize(req.body.path).replace(/\\/g, '/');
+        fs.readdir(contentRootPath + sanitizedPath, function (err, files) {
             //handling error
             if (err) {
                 console.log(err);
@@ -822,7 +823,8 @@ const multerConfig = {
 };
 
 function replaceRequestParams(req, res) {
-    req.body.path = (req.body.path && req.body.path.replace(pattern, ""));
+    const sanitizedPath = path.normalize(req.body.path).replace(/\\/g, '/');
+    req.body.path = (req.body.path && sanitizedPath);
 }
 /**
  * Gets the imageUrl from the client
@@ -1253,7 +1255,8 @@ app.post('/', function (req, res) {
         }
         var promiseList = [];
         for (var i = 0; i < file.length; i++) {
-            promiseList.push(stats(path.join(contentRootPath + req.body.path.replace(pattern, ""), file[i])));
+            const sanitizedPath = path.normalize(req.body.path).replace(/\\/g, '/');
+            promiseList.push(stats(path.join(contentRootPath + sanitizedPath, file[i])));
         }
         return Promise.all(promiseList);
     }
