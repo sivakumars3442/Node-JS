@@ -819,7 +819,7 @@ const multerConfig = {
 };
 
 function replaceRequestParams(req, res) {
-    const sanitizedPath = path.normalize(req.body.path).replace(/\\/g, '/');
+    const sanitizedPath = (req.body.path ? path.normalize(req.body.path).replace(/\\/g, '/') : undefined);
     req.body.path = (req.body.path && sanitizedPath);
 }
 /**
