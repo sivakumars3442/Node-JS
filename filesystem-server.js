@@ -1190,7 +1190,9 @@ app.post('/', function (req, res) {
             res.json(response);
         }
         var fileList = [];
-        fromDir(contentRootPath + req.body.path, req.body.searchString.replace(/\*/g, ""), contentRootPath, req.body.caseSensitive, req.body.searchString);
+        var sanitizedPath = path.normalize(req.body.path).replace(/^(\.\.[\/\\])+/, '');
+fromDir(path.join(contentRootPath, sanitizedPath), req.body.searchString.replace(/\*/g, ""), contentRootPath, req.body.caseSensitive, req.body.searchString);
+        //fromDir(contentRootPath + req.body.path, req.body.searchString.replace(/\*/g, ""), contentRootPath, req.body.caseSensitive, req.body.searchString);
         (async () => {
             const tes = await FileManagerDirectoryContent(req, res, contentRootPath + req.body.path);
             if (tes.permission != null && !tes.permission.read) {
@@ -1230,7 +1232,7 @@ app.post('/', function (req, res) {
                     cwd.permission = getPermission(contentRootPath + req.body.path + cwd.name, cwd.name, cwd.isFile, contentRootPath, cwd.filterPath);
                     if (fs.lstatSync(file).isDirectory()) {
                         fs.readdirSync(file).forEach(function (items) {
-                            if (fs.statSync(fs.realpathSync(path.resolve(file, items))).isDirectory()) {
+                            if (fs.statSync(path.join(file, items)).isDirectory()) {
                                 directoryList.push(items[i]);
                             }
                             if (directoryList.length > 0) {
