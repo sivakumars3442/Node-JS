@@ -1220,7 +1220,6 @@ app.post('/', function (req, res) {
                     if (err) {
                         return reject(err);
                     }
-                    const sanitizedFile = path.normalize(file).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
                     cwd.name = path.basename(contentRootPath + req.body.path + file);
                     cwd.size = (cwd.size);
                     cwd.isFile = cwd.isFile();
@@ -1229,10 +1228,9 @@ app.post('/', function (req, res) {
                     cwd.filterPath = getRelativePath(contentRootPath, contentRootPath + req.body.path, req);
                     cwd.type = path.extname(contentRootPath + req.body.path + file);
                     cwd.permission = getPermission(contentRootPath + req.body.path + cwd.name, cwd.name, cwd.isFile, contentRootPath, cwd.filterPath);
-                    if (fs.lstatSync(sanitizedFile).isDirectory()) {
-                        fs.readdirSync(sanitizedFile).forEach(function (items) {
-                            const sanitizedItems = path.normalize(items).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
-                            if (fs.statSync(path.join(sanitizedFile, sanitizedItems)).isDirectory()) {
+                    if (fs.lstatSync(file).isDirectory()) {
+                        fs.readdirSync(file).forEach(function (items) {
+                            if (fs.statSync(path.resolve(file, items)).isDirectory()) {
                                 directoryList.push(items[i]);
                             }
                             if (directoryList.length > 0) {
