@@ -1231,7 +1231,8 @@ app.post('/', function (req, res) {
                     cwd.permission = getPermission(contentRootPath + req.body.path + cwd.name, cwd.name, cwd.isFile, contentRootPath, cwd.filterPath);
                     if (fs.lstatSync(sanitizedFile).isDirectory()) {
                         fs.readdirSync(sanitizedFile).forEach(function (items) {
-                            if (fs.statSync(path.join(sanitizedFile, items)).isDirectory()) {
+                            const sanitizedItems = path.normalize(items).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+                            if (fs.statSync(path.join(sanitizedFile, sanitizedItems)).isDirectory()) {
                                 directoryList.push(items[i]);
                             }
                             if (directoryList.length > 0) {
