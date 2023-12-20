@@ -867,6 +867,7 @@ app.post('/Upload', multer(multerConfig).any('uploadFiles'), function (req, res)
     const checkTraversalPath = path.resolve(contentRootPath + req.body.path).replace(/[\\/]/g, "\\\\")+"\\\\";
     const actualPath = (contentRootPath + req.body.path).replace(/\//g, "\\\\");
     const isPathTraversal = checkTraversalPath == actualPath ? true : false;
+    var sanitizedPath = path.normalize(req.body.path).replace(/\\/g, '/');
     if(!isPathTraversal){
         var errorMsg = new Error();
         errorMsg.message = "Access denied for Directory-traversal";
@@ -890,7 +891,7 @@ app.post('/Upload', multer(multerConfig).any('uploadFiles'), function (req, res)
         var errorValue = new Error();
         if(req.body.action === 'save'){
             var folders = (req.body.filename).split('/');
-            var filepath = req.body.path;
+            var filepath = sanitizedPath;
             var uploadedFileName = folders[folders.length - 1];
             // checking the folder upload
             if (folders.length > 1)
@@ -953,8 +954,7 @@ app.post('/Upload', multer(multerConfig).any('uploadFiles'), function (req, res)
             }
             }
         } else if(req.body.action === 'remove') {
-            if (fs.existsSync(path.join(contentRootPath, req.body.path + req.body["cancel-uploading"]))) {
-                var sanitizedPath = path.normalize(req.body.path).replace(/^(\.\.[\/\\])+/, '');
+            if (fs.existsSync(path.join(contentRootPath, sanitizedPath + req.body["cancel-uploading"]))) {
                 fs.unlinkSync(path.join(contentRootPath, sanitizedPath + req.body["cancel-uploading"]));
             }
         }        
