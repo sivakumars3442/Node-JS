@@ -462,16 +462,16 @@ function updateCopyName(path, name, count, isFile) {
 function checkForFileUpdate(fromPath, toPath, item, contentRootPath, req) {
     var count = 1;
     var name = copyName = path.normalize(item.name).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
-    var sanitizedTargetPath = path.normalize(req.body.targetPath).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+    var sanitizedTargetPath = path.normalize(contentRootPath + req.body.targetPath).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
     if (fromPath == toPath) {
-        if (checkForDuplicates(contentRootPath + sanitizedTargetPath, name, item.isFile)) {
-            updateCopyName(contentRootPath + sanitizedTargetPath, name, count, item.isFile);
+        if (checkForDuplicates(sanitizedTargetPath, name, item.isFile)) {
+            updateCopyName(sanitizedTargetPath, name, count, item.isFile);
         }
     } else {
         if (req.body.renameFiles.length > 0 && req.body.renameFiles.indexOf(item.name) >= 0) {
-            updateCopyName(contentRootPath + sanitizedTargetPath, name, count, item.isFile);
+            updateCopyName(sanitizedTargetPath, name, count, item.isFile);
         } else {
-            if (checkForDuplicates(contentRootPath + sanitizedTargetPath, name, item.isFile)) {
+            if (checkForDuplicates(sanitizedTargetPath, name, item.isFile)) {
                 isRenameChecking = true;
             }
         }
