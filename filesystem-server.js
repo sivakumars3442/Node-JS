@@ -461,16 +461,17 @@ function updateCopyName(path, name, count, isFile) {
 
 function checkForFileUpdate(fromPath, toPath, item, contentRootPath, req) {
     var count = 1;
-    var name = copyName = item.name;
+    var name = copyName = path.normalize(item.name).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+    var sanitizedTargetPath = path.normalize(req.body.targetPath).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
     if (fromPath == toPath) {
-        if (checkForDuplicates(contentRootPath + req.body.targetPath, name, item.isFile)) {
-            updateCopyName(contentRootPath + req.body.targetPath, name, count, item.isFile);
+        if (checkForDuplicates(contentRootPath + sanitizedTargetPath, name, item.isFile)) {
+            updateCopyName(contentRootPath + sanitizedTargetPath, name, count, item.isFile);
         }
     } else {
         if (req.body.renameFiles.length > 0 && req.body.renameFiles.indexOf(item.name) >= 0) {
-            updateCopyName(contentRootPath + req.body.targetPath, name, count, item.isFile);
+            updateCopyName(contentRootPath + sanitizedTargetPath, name, count, item.isFile);
         } else {
-            if (checkForDuplicates(contentRootPath + req.body.targetPath, name, item.isFile)) {
+            if (checkForDuplicates(contentRootPath + sanitizedTargetPath, name, item.isFile)) {
                 isRenameChecking = true;
             }
         }
@@ -517,8 +518,8 @@ function CopyFiles(req, res, contentRootPath) {
     });
     if (!permissionDenied) {
         req.body.data.forEach(function (item) {
-            var fromPath = contentRootPath + item.filterPath + item.name;
-            var toPath = contentRootPath + req.body.targetPath + item.name;
+            var fromPath = path.normalize(contentRootPath + item.filterPath + item.name).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+            var toPath = path.normalize(contentRootPath + req.body.targetPath + item.name).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
             checkForFileUpdate(fromPath, toPath, item, contentRootPath, req);
             if (!isRenameChecking) {
                 toPath = contentRootPath + req.body.targetPath + copyName;
@@ -619,8 +620,8 @@ function MoveFiles(req, res, contentRootPath) {
     });
     if (!permissionDenied) {
         req.body.data.forEach(function (item) {
-            var fromPath = contentRootPath + item.filterPath + item.name;
-            var toPath = contentRootPath + req.body.targetPath + item.name;
+            var fromPath = path.normalize(contentRootPath + item.filterPath + item.name).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+            var toPath = path.normalize(contentRootPath + req.body.targetPath + item.name).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
             checkForFileUpdate(fromPath, toPath, item, contentRootPath, req);
             if (!isRenameChecking) {
                 toPath = contentRootPath + req.body.targetPath + copyName;
