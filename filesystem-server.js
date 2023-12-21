@@ -89,15 +89,16 @@ function GetFiles(req, res) {
  * function to check for exising folder or file
  */
 function checkForDuplicates(directory, name, isFile) {
-    var filenames = fs.readdirSync(directory);
+    const sanitizedPath = path.normalize(directory).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+    var filenames = fs.readdirSync(sanitizedPath);
     if (filenames.indexOf(name) == -1) {
         return false;
     } else {
         for (var i = 0; i < filenames.length; i++) {
             if (filenames[i] === name) {
-                if (!isFile && fs.lstatSync(directory + "/" + filenames[i]).isDirectory()) {
+                if (!isFile && fs.lstatSync(sanitizedPath + "/" + filenames[i]).isDirectory()) {
                     return true;
-                } else if (isFile && !fs.lstatSync(directory + "/" + filenames[i]).isDirectory()) {
+                } else if (isFile && !fs.lstatSync(sanitizedPath + "/" + filenames[i]).isDirectory()) {
                     return true;
                 } else {
                     return false;
