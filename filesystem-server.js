@@ -138,8 +138,9 @@ function renameFolder(req, res) {
         res.setHeader('Content-Type', 'application/json');
         res.json(response);
     } else {
-        var oldDirectoryPath = path.join(contentRootPath + req.body.data[0].filterPath, oldName);
-        var newDirectoryPath = path.join(contentRootPath + req.body.data[0].filterPath, newName);
+
+        var oldDirectoryPath = path.normalize(contentRootPath + req.body.data[0].filterPath, oldName).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+        var newDirectoryPath = path.normalize(contentRootPath + req.body.data[0].filterPath, newName).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
         if (checkForDuplicates(contentRootPath + req.body.data[0].filterPath, newName, req.body.data[0].isFile)) {
             var errorMsg = new Error();
             errorMsg.message = "A file or folder with the name " + req.body.name + " already exists.";
