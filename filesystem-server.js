@@ -66,13 +66,12 @@ class AccessRules {
  */
 function GetFiles(req, res) {
     return new Promise((resolve, reject) => {
-        const sanitizedPath = path.normalize(req.body.path).replace(/\\/g, '/');
-        fs.readdir(contentRootPath + sanitizedPath, function (err, files) {
+        const sanitizedPath = path.normalize(req.body.path).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+        fs.readdir(path.join(contentRootPath, sanitizedPath), function (err, files) {
             //handling error
             if (err) {
                 console.log(err);
                 reject(err);
-
             } else
                 resolve(files);
         });
@@ -956,6 +955,7 @@ app.post('/Upload', multer(multerConfig).any('uploadFiles'), function (req, res)
         } else if(req.body.action === 'remove') {
             if (fs.existsSync(path.join(contentRootPath, sanitizedPath + req.body["cancel-uploading"]))) {
                 fs.unlinkSync(path.join(contentRootPath, sanitizedPath + req.body["cancel-uploading"]));
+
             }
         }        
         if(errorValue != null) {
